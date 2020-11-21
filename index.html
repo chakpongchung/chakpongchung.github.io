@@ -1,211 +1,352 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>cpchung's home</title>
 
-<body>
+    <body>
 
-    <h2>Setting the Viewport</h2>
-    <p>This example does not really do anything, other than showing you how to add the viewport meta element.</p>
 
-</body>
+        <canvas id="myCanvas" width="480" height="320"></canvas>
 
-<head>
-    <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop - lesson 10: finishing up</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
-        
-        canvas {
-            background: #eee;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
-</head>
+        <script>
+            var canvas = document.getElementById("myCanvas");
+            var ctx = canvas.getContext("2d");
+            var ballRadius = 10;
+            var x = canvas.width / 2;
+            var y = canvas.height - 30;
+            var dx = 2;
+            var dy = -2;
+            var paddleHeight = 10;
+            var paddleWidth = 75;
+            var paddleX = (canvas.width - paddleWidth) / 2;
+            var rightPressed = false;
+            var leftPressed = false;
+            var brickRowCount = 5;
+            var brickColumnCount = 3;
+            var brickWidth = 75;
+            var brickHeight = 20;
+            var brickPadding = 10;
+            var brickOffsetTop = 30;
+            var brickOffsetLeft = 30;
+            var score = 0;
+            var lives = 3;
 
-<body>
-
-    <canvas id="myCanvas" width="480" height="320"></canvas>
-
-    <script>
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        var ballRadius = 10;
-        var x = canvas.width / 2;
-        var y = canvas.height - 30;
-        var dx = 2;
-        var dy = -2;
-        var paddleHeight = 10;
-        var paddleWidth = 75;
-        var paddleX = (canvas.width - paddleWidth) / 2;
-        var rightPressed = false;
-        var leftPressed = false;
-        var brickRowCount = 5;
-        var brickColumnCount = 3;
-        var brickWidth = 75;
-        var brickHeight = 20;
-        var brickPadding = 10;
-        var brickOffsetTop = 30;
-        var brickOffsetLeft = 30;
-        var score = 0;
-        var lives = 3;
-
-        var bricks = [];
-        for (var c = 0; c < brickColumnCount; c++) {
-            bricks[c] = [];
-            for (var r = 0; r < brickRowCount; r++) {
-                bricks[c][r] = {
-                    x: 0,
-                    y: 0,
-                    status: 1
-                };
-            }
-        }
-
-        document.addEventListener("keydown", keyDownHandler, false);
-        document.addEventListener("keyup", keyUpHandler, false);
-        document.addEventListener("mousemove", mouseMoveHandler, false);
-
-        function keyDownHandler(e) {
-            if (e.keyCode == 39) {
-                rightPressed = true;
-            } else if (e.keyCode == 37) {
-                leftPressed = true;
-            }
-        }
-
-        function keyUpHandler(e) {
-            if (e.keyCode == 39) {
-                rightPressed = false;
-            } else if (e.keyCode == 37) {
-                leftPressed = false;
-            }
-        }
-
-        function mouseMoveHandler(e) {
-            var relativeX = e.clientX - canvas.offsetLeft;
-            if (relativeX > 0 && relativeX < canvas.width) {
-                paddleX = relativeX - paddleWidth / 2;
-            }
-        }
-
-        function collisionDetection() {
+            var bricks = [];
             for (var c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
                 for (var r = 0; r < brickRowCount; r++) {
-                    var b = bricks[c][r];
-                    if (b.status == 1) {
-                        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-                            dy = -dy;
-                            b.status = 0;
-                            score++;
-                            if (score == brickRowCount * brickColumnCount) {
-                                alert("YOU WIN, CONGRATS!");
-                                document.location.reload();
+                    bricks[c][r] = {
+                        x: 0,
+                        y: 0,
+                        status: 1
+                    };
+                }
+            }
+
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+            document.addEventListener("mousemove", mouseMoveHandler, false);
+
+            function keyDownHandler(e) {
+                if (e.keyCode == 39) {
+                    rightPressed = true;
+                } else if (e.keyCode == 37) {
+                    leftPressed = true;
+                }
+            }
+
+            function keyUpHandler(e) {
+                if (e.keyCode == 39) {
+                    rightPressed = false;
+                } else if (e.keyCode == 37) {
+                    leftPressed = false;
+                }
+            }
+
+            function mouseMoveHandler(e) {
+                var relativeX = e.clientX - canvas.offsetLeft;
+                if (relativeX > 0 && relativeX < canvas.width) {
+                    paddleX = relativeX - paddleWidth / 2;
+                }
+            }
+
+            function collisionDetection() {
+                for (var c = 0; c < brickColumnCount; c++) {
+                    for (var r = 0; r < brickRowCount; r++) {
+                        var b = bricks[c][r];
+                        if (b.status == 1) {
+                            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                                dy = -dy;
+                                b.status = 0;
+                                score++;
+                                if (score == brickRowCount * brickColumnCount) {
+                                    // alert("YOU WIN, CONGRATS!");
+                                    document.location.reload();
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
-        }
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
 
-        function drawPaddle() {
-            ctx.beginPath();
-            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
-        }
+            function drawPaddle() {
+                ctx.beginPath();
+                ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
 
-        function drawBricks() {
-            for (var c = 0; c < brickColumnCount; c++) {
-                for (var r = 0; r < brickRowCount; r++) {
-                    if (bricks[c][r].status == 1) {
-                        var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
-                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
-                        bricks[c][r].x = brickX;
-                        bricks[c][r].y = brickY;
-                        ctx.beginPath();
-                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = "#0095DD";
-                        ctx.fill();
-                        ctx.closePath();
+            function drawBricks() {
+                for (var c = 0; c < brickColumnCount; c++) {
+                    for (var r = 0; r < brickRowCount; r++) {
+                        if (bricks[c][r].status == 1) {
+                            var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                            var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                            bricks[c][r].x = brickX;
+                            bricks[c][r].y = brickY;
+                            ctx.beginPath();
+                            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                            ctx.fillStyle = "#0095DD";
+                            ctx.fill();
+                            ctx.closePath();
+                        }
                     }
                 }
             }
-        }
 
-        function drawScore() {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
-            ctx.fillText("Score: " + score, 8, 20);
-        }
-
-        function drawLives() {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
-            ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBricks();
-            drawBall();
-            drawPaddle();
-            drawScore();
-            drawLives();
-            collisionDetection();
-
-            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx;
+            function drawScore() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: " + score, 8, 20);
             }
-            if (y + dy < ballRadius) {
-                dy = -dy;
-            } else if (y + dy > canvas.height - ballRadius) {
-                if (x > paddleX && x < paddleX + paddleWidth) {
+
+            function drawLives() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawBricks();
+                drawBall();
+                drawPaddle();
+                drawScore();
+                drawLives();
+                collisionDetection();
+
+                if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                    dx = -dx;
+                }
+                if (y + dy < ballRadius) {
                     dy = -dy;
-                } else {
-                    lives--;
-                    if (!lives) {
-                        alert("GAME OVER");
-                        document.location.reload();
+                } else if (y + dy > canvas.height - ballRadius) {
+                    if (x > paddleX && x < paddleX + paddleWidth) {
+                        dy = -dy;
                     } else {
-                        x = canvas.width / 2;
-                        y = canvas.height - 30;
-                        dx = 3;
-                        dy = -3;
-                        paddleX = (canvas.width - paddleWidth) / 2;
+                        lives--;
+                        if (!lives) {
+                            // alert("GAME OVER");
+                            document.location.reload();
+                        } else {
+                            x = canvas.width / 2;
+                            y = canvas.height - 30;
+                            dx = 3;
+                            dy = -3;
+                            paddleX = (canvas.width - paddleWidth) / 2;
+                        }
                     }
                 }
+
+                if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                    paddleX += 7;
+                } else if (leftPressed && paddleX > 0) {
+                    paddleX -= 7;
+                }
+
+                x += dx;
+                y += dy;
+                requestAnimationFrame(draw);
             }
 
-            if (rightPressed && paddleX < canvas.width - paddleWidth) {
-                paddleX += 7;
-            } else if (leftPressed && paddleX > 0) {
-                paddleX -= 7;
-            }
+            draw();
+        </script>
 
-            x += dx;
-            y += dy;
-            requestAnimationFrame(draw);
-        }
+        <table width="100%">
+            <tbody>
+                <tr>
+                    <td align="center">
+                        <img width="200" src="http://i.telegraph.co.uk/multimedia/archive/02625/mountain1_2625884k.jpg">
+                    </td>
+                    <td align="center">
+                        <h2>cpchung</h2>
 
-        draw();
-    </script>
+                        <b>Email:</b> chakpongchung [at] gmail (dot) com
+                        <br>
+                        <br>
+                        <a href="">CV</a>
+                        <a href="https://github.com/chakpongchung" title="">github</a>
+                        <a href="https://bitbucket.org/cpchung" title="">bitbucket</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+        <h3><i>About Me</i></h3> Now I am looking for software developer opportunities to build things. My past experience is mainly in the intersection of computer science and mathematics, like Scientific Computing and Algorithm Design. I also have limited
+        experience in machine learning from some side projects.
+        <br>
+        <br> When I was a TA, large part of my day was waiting for students to my TA session or running experiments on clusters, from there I developed the interest in computer systems.
+        <!--OSdev and xv6 have my attention recently to build layers between booting and loading OS kernel, as I am thinking whether we can better utilize those idle machines surrounding us. -->
+        <!--Some readings I am working on to achieve this goal:-->
+        <!--<a href="https://docs.google.com/document/d/1_Rvgpne5ZoUgaaLxh53Gqs8cRdQbu7S7MfbIVNQFxbc/edit?usp=sharing" title="">list</a>-->
+        To have more exposure in related areas, I start to work on the OMSCS master degree in Computer Science from <a href="http://www.omscs.gatech.edu/" title="">Georgia Tech.</a>
+        <!-- I also have a great interest in machine learning, operating system, system programming and socket programming. -->
+        My B.S. is in Mathematics from <a href="http://www.math.ust.hk/people/faculty.php" title="">Hong Kong University of Science and Technology, Hong Kong</a>.
+        <br>
+        <br> In my spare time, I enjoy learning and like to stay active. Hiking is my favorite in Hong Kong. Now I go to gym more often</a>.
+        <br>
+        <br>
 
-</body>
+        <hr>
+        <h3><i>Work Experience</i></h3>
+
+        <b class="title"> <a href="http://www.genomics.cn/en/index">side project</a></b>
+        <br>
+        <i><font size="2"> Now  Cambridge,MA</font></i>
+        <br>
+        <br>
+
+        <ul>
+            Working with my friends we are now developing a graph based reinforcement learning system for tutoring market in China. Stay tuned!
+
+        </ul>
+
+        <b class="title"> <a href="http://www.genomics.cn/en/index">Philips Research</a></b>
+        <br>
+        <i><font size="2"> Now  Cambridge,MA</font></i>
+        <br>
+        <br>
+
+        <ul>
+
+        </ul>
+
+        <b class="title"> <a href="http://www.genomics.cn/en/index">Beijing Genomics Institute</a></b>
+        <br>
+        <i><font size="2"> June 2014  August 2014 , Hong Kong</font></i>
+        <br>
+        <br>
+        <!-- Next-generation sequencing technology provides the opportunity to study cancer genomics at a single-nucleotide resolution. This technology provides researchers with massive amounts of data, but how can we mine it for useful information?
+    The task: Given sequencing data from a normal tissue sample and sequencing data from a tumor sample, identify the somatic mutations present in the tumor genome. -->
+        <ul>
+            <li>C++ Implementation of Neural Network with openMP in learning DNA sequencing data</li>
+            <li>Evaluated several classification and clustering techniques (KNN, PCA, Naive Bayes, SVM, etc.) in machine learning to separate somatic mutations from non-somatic ones</li>
+            <li>The final report for the project can be found
+                <a href="https://drive.google.com/file/d/0B07OecC53Z0deVRaTHpGNlpjMlU/view?usp=sharing" title="">here</a>.</li>
+            <!--</ul>-->
+            <!--<hr>-->
+            <!-- <h3><i>RESEARCH WORK</i></h3> -->
+        </ul>
+
+        <b class="title">Graduate Courses taken in Computer Science and Mathematics</b>
+        <br>
+        <ul>
+            <!-- <a href="http://www.cs.odu.edu/~cs471w/spring15/assignments/assign.html" title="">   projects</a> -->
+            <!-- <a href="https://github.com/chakpongchung/Operating-System/tree/master" title="">code</a> -->
+            <!--<li>
+                      <!-- <a href="http://www.cs.odu.edu/~cs476/" title="">projects</a> -->
+            <!-- <a href="https://github.com/chakpongchung/system_programming" title="">code</a> -->
+            <!-- <a href="http://www.cs.odu.edu/~cs779/spring15/assignments/assign.html" title="">projects</a> -->
+            <!-- <a href="https://github.com/chakpongchung/Sockets-Networking" title="">code</a> -->
+            <li> <a href="https://www.udacity.com/wiki" title="">Software Development Process(Java and Android Programming)</a></li>
+            <li> <a href="https://www.udacity.com/wiki/cn/schedule" title="">Computer Networking</a></li>
+            <li> <a href="https://github.com/chakpongchung/Network-Security" title="">Network Security </a></li>
+            <li> <a href="https://www.udacity.com/wiki/ud923/howto" title="">Operating System </a></li>
+            <li> Analysis of Algorithms</li>
+            <li> Theory of Computation</li>
+            <li> Operating Systems, Systems Programming, Network Programming (audited from Prof.Wahab)</li>
+            <br>
+            <br>
+            <li> Functional Analysis</li>
+            <li> Measure and Integration</li>
+            <li> Numerical Solution to Differential Equation</li>
+            <li> Finite Element and Boundary Element Method</li>
+            <li> Kinetic Theory</li>
+            <li> Topic Course in Nematic Polymer Simulation (A)</li>
+        </ul>
+
+
+        <b class="title"> <a href="https://github.com/chakpongchung/spherical-harmonics-expansion" title=""> Master Project </a></b>
+
+        <br>
+        <ul>
+
+            <li> 1st derivation (to the best of my knowledge) for the inner product of 3D rotational gradient operator acted on spherical harmonics.</li>
+            <li> Simplify the computation used in Nematic Polymer simulation with kinetic model.</li>
+            <li> Profile the fortran code with gprof, running time is 400% faster on single core machine.</li>
+            <li> Design methods to fully automate the parameter tuning process with high performance clusters based on Sun Grid Engine.</li>
+            <li> Found the <a href="https://drive.google.com/folderview?id=0B07OecC53Z0dMnpnbVpqNjV4VkE&usp=sharing" title="">periodic pattern</a> in velocity field.</li>
+            <li>The <a href="https://bitbucket.org/cpchung/1d-nematic-polymer" title="">repository</a> is still under constant refactoring.</li>
+
+        </ul>
+
+
+        <hr>
+        <h3><i>Interesting Past Projects <font size="2">(under construction) </font></i></h3>
+
+
+
+        <b class="title"> Web</b>
+        <br>
+        <ul>
+            <li>
+                Database (with MongoDB,MySQL); developer of <a href="http://samedaygrocerydelivery.net" title="">samedaygrocerydelivery.net</a> combining PHP,JavaScript,JQuery and Bootstrap.
+                <!--	Here is a preliminary functional <a href="https://drive.google.com/file/d/0B07OecC53Z0dOFMxMGZnQTNoTTg/view?usp=sharing" title="">prototype</a>.-->
+        </ul>
+
+        <b class="title"> CMOS VLSI DESIGN</b>
+        <br>
+        <ul>
+            <li>In the summer course CMOS VLSI DESIGN, we designed an 8-bit Algorithmic Logical Unit, which can process 8-bit addition/subtraction, an operator to perform not A and B, and a comparator</a>
+            </li>
+            <li>This helps us to familiarize the IC design process with Candence. After this we have a better view how layout is built up to manufacture an IC. Delay and the size of the layout is optimized to meet the project requirement</a>
+            </li>
+            <!-- <li>Here is the project <a href="https://goo.gl/yPuqJT" title="">report</a> -->
+        </ul>
+
+        <b class="title"> Fluid flow past arbitrary obstacles</b>
+        <br>
+        <br> Implement a 2D solver for fluid flow past arbitrary obstacles(e.g. Cylinder), cavity flow and channel flow in Fortran and C++ with Lattice Boltzmann method and openMP. For those interested in what do they look like, you can see the following
+        video.
+        <br>
+        <ul>
+            <li>contour plot of u-velocity <a href="https://drive.google.com/file/d/0B07OecC53Z0dU29hbWZBZzI4MHM/view?usp=sharing" title="">here</a>.</li>
+            <li>Here is a <a href="https://drive.google.com/file/d/0B07OecC53Z0dMm9EbjRVUEtEZjQ/view?usp=sharing" title="">contour plot</a> and
+                <a href="https://drive.google.com/file/d/0B07OecC53Z0dRGhrVExnclRGM2c/view?usp=sharing" title="">pathlines</a> I created using commercial software Fluent for comparison .</li>
+            <li>The similar result calculated using openFoam is here</li>
+        </ul>
+        <b class="title"> Riemann Solver</b>
+        <br>
+        <ul>
+            <li> Study numerical methods for nonlinear hyperbolic equations.</li>
+            <li>Implement the scheme in fortran for the equations of Burgers, linearized gas dynamics, and shallow water using Riemann Solver</li>
+        </ul>
+
+
+
+
+        <script type="text/javascript" id="clustrmaps" src="//cdn.clustrmaps.com/map_v2.js?u=ZQjx&d=MmwRg_0ByvcXuD6KRry_TN-zVdRAW8APF7lDeiNC7go"></script>
+    </body>
 
 </html>
